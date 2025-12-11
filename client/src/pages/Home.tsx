@@ -8,6 +8,7 @@ import { Link, useLocation } from "wouter";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { trpc } from "@/lib/trpc";
+import { formatCurrency, formatRent } from "@/lib/utils-types";
 import { Star } from "lucide-react";
 
 function FeaturedProperties() {
@@ -58,9 +59,9 @@ function FeaturedProperties() {
                   <div className="absolute bottom-4 left-4 text-white">
                     <span className="text-2xl font-serif font-bold">
                       {property.salePrice
-                        ? `R$ ${(property.salePrice / 100).toLocaleString('pt-BR', { minimumFractionDigits: 0 })}`
+                        ? formatCurrency(property.salePrice)
                         : property.rentPrice
-                        ? `R$ ${(property.rentPrice / 100).toLocaleString('pt-BR', { minimumFractionDigits: 0 })}/mês`
+                        ? formatRent(property.rentPrice)
                         : 'Consulte'}
                     </span>
                   </div>
@@ -163,9 +164,9 @@ function AllProperties() {
                 <div className="absolute bottom-4 left-4 text-white">
                   <span className="text-2xl font-serif font-bold">
                     {property.salePrice
-                      ? `R$ ${(property.salePrice / 100).toLocaleString('pt-BR', { minimumFractionDigits: 0 })}`
+                      ? formatCurrency(property.salePrice)
                       : property.rentPrice
-                      ? `R$ ${(property.rentPrice / 100).toLocaleString('pt-BR', { minimumFractionDigits: 0 })}/mês`
+                      ? formatRent(property.rentPrice)
                       : 'Consulte'}
                   </span>
                 </div>
@@ -402,10 +403,10 @@ export default function Home() {
         
         <div className="relative z-10 container text-center text-white">
           <h1 className="text-5xl md:text-7xl font-bold mb-6" style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '61px' }}>
-            Encontre a Mansão dos Seus Sonhos
+            Encontre Seu Imóvel em Brasília
           </h1>
           <p className="text-xl md:text-2xl mb-12 max-w-3xl mx-auto">
-            Consultoria imobiliária de luxo em Brasília. Imóveis exclusivos com atendimento personalizado.
+            A Casa DF Imóveis oferece as melhores opções de imóveis em Brasília e região. Encontre seu lar ideal com nosso atendimento especializado.
           </p>
 
           {/* Search Bar */}
@@ -521,27 +522,51 @@ export default function Home() {
         <div className="container">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-4xl font-serif font-bold mb-6">Casa DF</h2>
+              <h2 className="text-4xl font-serif font-bold mb-6">Casa DF Imóveis</h2>
               <p className="text-lg text-muted-foreground mb-6">
-                Consultoria imobiliária de luxo em Brasília. Especializado em imóveis de alto padrão com atendimento personalizado e exclusivo.
+                Sua imobiliária de confiança em Brasília. Especializada em imóveis residenciais e comerciais com atendimento personalizado e profissional.
               </p>
               <p className="text-muted-foreground mb-6">
-                Com mais de 15 anos de experiência no mercado imobiliário de luxo, ofereço um atendimento diferenciado e personalizado para cada cliente. Minha missão é encontrar o imóvel perfeito que atenda todas as suas necessidades e supere suas expectativas.
+                A Casa DF Imóveis oferece soluções completas para compra, venda e locação de imóveis em Brasília e região. Nossa equipe está pronta para te ajudar a encontrar o imóvel ideal, com transparência, agilidade e segurança em todas as etapas.
               </p>
-              <p className="text-sm text-muted-foreground mb-6">
-                <strong>CRECI:</strong> 17921-DF
-              </p>
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <div className="flex items-center gap-2">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                    <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="font-semibold">Atendimento 24/7</p>
+                    <p className="text-sm text-muted-foreground">Suporte completo</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                    <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="font-semibold">Melhores Preços</p>
+                    <p className="text-sm text-muted-foreground">Negociação justa</p>
+                  </div>
+                </div>
+              </div>
               <Link href="/quem-somos">
                 <Button size="lg">Conheça Mais</Button>
               </Link>
             </div>
-            <div className="relative h-96 lg:h-full min-h-[400px] rounded-lg overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/5" />
-              <img
-                src="/ernani-nunes-photo.jpg"
-                alt="Casa DF - O Casa DF"
-                className="w-full h-full object-cover"
-              />
+            <div className="relative h-96 lg:h-full min-h-[400px] rounded-lg overflow-hidden bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+              <div className="text-center p-8">
+                <div className="w-32 h-32 mx-auto mb-6 rounded-full bg-white/90 flex items-center justify-center">
+                  <svg className="w-20 h-20 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                  </svg>
+                </div>
+                <h3 className="text-3xl font-bold text-primary mb-2">CASA DF</h3>
+                <p className="text-lg text-muted-foreground">Imóveis em Brasília</p>
+              </div>
             </div>
           </div>
         </div>

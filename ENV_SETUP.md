@@ -221,5 +221,5 @@ Sempre use variáveis de ambiente para informações sensíveis como:
 
 Para dúvidas sobre configuração:
 - Documentação Manus: https://docs.manus.im
-- Email: ernaniSimiao@hotmail.com
+- Email: contato@casadf.com.br
 - WhatsApp: (61) 3254-4464

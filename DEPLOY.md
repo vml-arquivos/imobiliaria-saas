@@ -454,7 +454,7 @@ pnpm build
 
 Problemas com deploy?
 
-- 📧 Email: ernaniSimiao@hotmail.com
+- 📧 Email: contato@casadf.com.br
 - 📱 WhatsApp: (61) 3254-4464
 - 📚 Documentação: [API_DOCUMENTATION.md](./API_DOCUMENTATION.md)
 

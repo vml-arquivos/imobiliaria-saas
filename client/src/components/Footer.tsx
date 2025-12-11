@@ -12,13 +12,13 @@ export default function Footer() {
           {/* Sobre */}
           <div>
             <h3 className="text-xl font-serif font-semibold mb-4 text-primary">
-              Casa DF
+              Casa DF Imóveis
             </h3>
             <p className="text-background/70 text-sm leading-relaxed mb-4">
-              Consultoria imobiliária de luxo em Brasília. Especializado em imóveis de alto padrão com atendimento personalizado e exclusivo.
+              Sua imobiliária de confiança em Brasília. Especializada em imóveis residenciais e comerciais com atendimento personalizado e profissional.
             </p>
             <p className="text-background/70 text-sm">
-              <strong className="text-background">CRECI:</strong> 17921-DF
+              <strong className="text-background">Localização:</strong> Guará - DF
             </p>
           </div>
 
@@ -74,37 +74,37 @@ export default function Footer() {
             <ul className="space-y-3">
               <li>
                 <a
-                  href="tel:6132544464"
+                  href="tel:61981488353"
                   className="flex items-start gap-3 text-background/70 hover:text-primary transition-colors text-sm"
                 >
                   <Phone className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                  <span>(61) 3254-4464</span>
+                  <span>(61) 98148-8353</span>
                 </a>
               </li>
               <li>
                 <a
-                  href="https://wa.me/5561981299575"
+                  href="https://wa.me/5561981488353"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-start gap-3 text-background/70 hover:text-primary transition-colors text-sm"
                 >
                   <Phone className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                  <span>(61) 98129-9575</span>
+                  <span>WhatsApp</span>
                 </a>
               </li>
               <li>
                 <a
-                  href="mailto:ernanisimiao@hotmail.com"
+                  href="mailto:contato@casadf.com.br"
                   className="flex items-start gap-3 text-background/70 hover:text-primary transition-colors text-sm"
                 >
                   <Mail className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                  <span>ernanisimiao@hotmail.com</span>
+                  <span>contato@casadf.com.br</span>
                 </a>
               </li>
               <li>
                 <div className="flex items-start gap-3 text-background/70 text-sm">
                   <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                  <span>Brasília - DF</span>
+                  <span>Guará - Brasília/DF</span>
                 </div>
               </li>
             </ul>
@@ -160,7 +160,7 @@ export default function Footer() {
         <div className="border-t border-background/10 py-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-background/60">
             <p>
-              © {currentYear} Casa DF - O Casa DF. Todos os direitos reservados.
+              © {currentYear} Casa DF Imóveis. Todos os direitos reservados.
             </p>
             <div className="flex gap-6">
               <Link href="/privacidade">

@@ -362,7 +362,7 @@
 
 ## Preparação Final para GitHub
 
-- [x] Criar página Quem Somos completa com biografia do Ernani
+- [x] Criar página Quem Somos completa com sobre a Casa DF
 - [x] Verificar todas as conexões backend↔frontend
 - [x] Criar guia GITHUB_UPLOAD.md com instruções passo a passo
 - [x] Confirmar que projeto está pronto para download

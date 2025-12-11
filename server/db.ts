@@ -1,4 +1,5 @@
 import { eq, desc, and, or, like, gte, lte, sql } from "drizzle-orm";
+import { ENV } from "./_core/env";
 import { drizzle } from "drizzle-orm/mysql2";
 import { 
   InsertUser, 

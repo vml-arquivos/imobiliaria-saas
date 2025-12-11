@@ -5,6 +5,7 @@ import { httpBatchLink, TRPCClientError } from "@trpc/client";
 import { createRoot } from "react-dom/client";
 import superjson from "superjson";
 import { HelmetProvider } from "react-helmet-async";
+import { CompareProvider } from "./contexts/CompareContext";
 import App from "./App";
 import { getLoginUrl } from "./const";
 import "./index.css";
@@ -57,7 +58,9 @@ createRoot(document.getElementById("root")!).render(
   <HelmetProvider>
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>
-        <App />
+        <CompareProvider>
+          <App />
+        </CompareProvider>
       </QueryClientProvider>
     </trpc.Provider>
   </HelmetProvider>

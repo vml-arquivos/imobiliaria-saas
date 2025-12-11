@@ -25,6 +25,7 @@ import Footer from "@/components/Footer";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Helmet } from "react-helmet-async";
+import { formatCurrency, formatRent } from "@/lib/utils-types";
 
 export default function PropertyDetail() {
   const params = useParams();
@@ -115,10 +116,10 @@ export default function PropertyDetail() {
     );
   }
 
-  const price = property.salePrice 
-    ? `R$ ${(property.salePrice / 100).toLocaleString('pt-BR', { minimumFractionDigits: 0 })}`
-    : property.rentPrice
-    ? `R$ ${(property.rentPrice / 100).toLocaleString('pt-BR', { minimumFractionDigits: 0 })}/mês`
+  const price = property?.salePrice 
+    ? formatCurrency(property.salePrice)
+    : property?.rentPrice
+    ? formatRent(property.rentPrice)
     : 'Consulte';
 
   const fullAddress = [property.address, property.neighborhood, property.city, property.state]
@@ -127,9 +128,9 @@ export default function PropertyDetail() {
 
   // SEO Meta Tags
   const seoTitle = `${property.title} - Casa DF Corretor`;
-  const seoDescription = property.description?.substring(0, 160) || `${property.propertyType} para ${property.transactionType} em ${property.neighborhood}, ${property.city}. ${price}.`;
+  const seoDescription = property?.description?.substring(0, 160) || `${property?.type || 'Imóvel'} para ${property?.transactionType} em ${property?.neighborhood}, ${property?.city}. ${price}.`;
   const seoImage = property.mainImage || allImages[0] || 'https://placehold.co/1200x630';
-  const seoUrl = `https://casadf.com.br/imovel/${property.id}`;
+  const seoUrl = `https://casadf.com/imovel/${property?.id}`;
 
   return (
     <>
@@ -435,9 +436,9 @@ export default function PropertyDetail() {
                         <Phone className="h-5 w-5" />
                         <span>(61) 3254-4464</span>
                       </a>
-                      <a href="mailto:ernanisimiao@hotmail.com" className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors">
+                      <a href="mailto:casadfsimiao@hotmail.com" className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors">
                         <Mail className="h-5 w-5" />
-                        <span>ernanisimiao@hotmail.com</span>
+                        <span>casadfsimiao@hotmail.com</span>
                       </a>
                       <a href="https://wa.me/5561999999999" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-green-600 hover:text-green-700 transition-colors">
                         <MessageSquare className="h-5 w-5" />

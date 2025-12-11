@@ -365,9 +365,9 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 
 **Casa DF**
 - CRECI: 17921-DF
-- Email: ernanisimiao@hotmail.com
+- Email: contato@casadf.com.br
 - Telefone: (61) 3254-4464
-- Instagram: [@ernani.nunes](https://instagram.com/ernani.nunes)
+- Instagram: [@casadf](https://instagram.com/casadf)
 
 ## 🆘 Suporte
 

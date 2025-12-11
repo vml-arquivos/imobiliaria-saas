@@ -46,7 +46,7 @@ Retorna informações do usuário logado.
 {
   "id": 1,
   "name": "Casa DF",
-  "email": "ernani@example.com",
+  "email": "contato@casadf.com.br",
   "role": "admin",
   "createdAt": "2024-01-01T00:00:00.000Z"
 }

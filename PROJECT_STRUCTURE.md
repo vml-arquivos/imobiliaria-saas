@@ -22,13 +22,13 @@ Assets estáticos servidos diretamente na raiz do site.
 
 ```
 public/
-├── ernani-nunes-photo.jpg    # Foto do corretor
-├── logo-ernani-nunes.jpg     # Logo da empresa
+├── logo-casadf.png    # Foto do corretor
+├── logo-casadf.png     # Logo da empresa
 ├── favicon.ico               # Ícone do site
 └── robots.txt                # SEO - instruções para crawlers
 ```
 
-**Nota**: Arquivos aqui são acessíveis via `/nome-do-arquivo.ext` (ex: `/logo-ernani-nunes.jpg`)
+**Nota**: Arquivos aqui são acessíveis via `/nome-do-arquivo.ext` (ex: `/logo-casadf.png`)
 
 ### `client/src/`
 
@@ -382,7 +382,7 @@ Para adicionar novas funcionalidades:
 
 Dúvidas sobre a estrutura?
 
-- 📧 Email: ernaniSimiao@hotmail.com
+- 📧 Email: contato@casadf.com.br
 - 📱 WhatsApp: (61) 3254-4464
 
 ---

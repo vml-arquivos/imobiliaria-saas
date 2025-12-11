@@ -1,320 +1,224 @@
-import { trpc } from "@/lib/trpc";
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "wouter";
+import { Helmet } from "react-helmet-async";
+import { useLocation } from "wouter";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import PropertyFilterBar, { PropertyFilters } from "@/components/PropertyFilterBar";
+import PropertyCard, { Property } from "@/components/PropertyCard";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Bed, Bath, Car, Ruler, MapPin, SlidersHorizontal, X } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Grid3x3, List } from "lucide-react";
+import { trpc } from "@/lib/trpc";
 
 export default function Properties() {
   const [location, setLocation] = useLocation();
-  const [filters, setFilters] = useState({
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [sortBy, setSortBy] = useState<"recent" | "price_asc" | "price_desc">("recent");
+  
+  const [filters, setFilters] = useState<PropertyFilters>({
+    transactionType: "venda",
     propertyType: "",
-    transactionType: "",
     neighborhood: "",
-    minPrice: "",
-    maxPrice: "",
+    minPrice: 0,
+    maxPrice: 5000000,
+    bedrooms: "",
+    features: [],
   });
-  const [sortBy, setSortBy] = useState<"price_asc" | "price_desc" | "newest">("newest");
 
   // Ler query params da URL ao carregar
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    setFilters(prev => ({
-      ...prev,
-      transactionType: params.get("finalidade") || "",
-      propertyType: params.get("tipo") || "",
-      neighborhood: params.get("bairro") || "",
-    }));
+    const finalidade = params.get("finalidade");
+    const tipo = params.get("tipo");
+    const bairro = params.get("bairro");
+    
+    if (finalidade || tipo || bairro) {
+      setFilters(prev => ({
+        ...prev,
+        transactionType: finalidade === "aluguel" ? "aluguel" : "venda",
+        propertyType: tipo || "",
+        neighborhood: bairro || "",
+      }));
+    }
   }, [location]);
 
-  const { data: properties, isLoading } = trpc.properties.list.useQuery();
+  const { data: propertiesData, isLoading } = trpc.properties.list.useQuery();
 
-  // Filtrar e ordenar imóveis
-  const filteredAndSortedProperties = properties
-    ? properties
-        .filter((property) => {
-          if (filters.propertyType && property.propertyType !== filters.propertyType) return false;
-          if (filters.transactionType && property.transactionType !== filters.transactionType) return false;
-          if (filters.neighborhood && property.neighborhood !== filters.neighborhood) return false;
-          
-          const price = property.salePrice || property.rentPrice || 0;
-          if (filters.minPrice && price < parseInt(filters.minPrice)) return false;
-          if (filters.maxPrice && price > parseInt(filters.maxPrice)) return false;
-          
-          return true;
-        })
-        .sort((a, b) => {
-          const priceA = a.salePrice || a.rentPrice || 0;
-          const priceB = b.salePrice || b.rentPrice || 0;
-          
-          if (sortBy === "price_asc") return priceA - priceB;
-          if (sortBy === "price_desc") return priceB - priceA;
-          return b.id - a.id; // newest
-        })
+  // Converter dados do backend para formato do PropertyCard
+  const convertedProperties: Property[] = propertiesData
+    ? propertiesData.map((p) => ({
+        id: p.id,
+        title: p.title,
+        description: p.description || "",
+        price: Number(p.salePrice || p.rentPrice || 0),
+        transactionType: p.transactionType === "locacao" ? "aluguel" : "venda",
+        propertyType: p.type || "Apartamento",
+        neighborhood: p.neighborhood || "",
+        city: p.city || "Brasília",
+        bedrooms: p.bedrooms || 0,
+        bathrooms: p.bathrooms || 0,
+        area: Number(p.totalArea || 0),
+        garageSpaces: p.parkingSpaces || 0,
+        images: p.mainImage ? [p.mainImage] : [],
+        featured: false,
+        createdAt: p.createdAt || new Date(),
+      }))
     : [];
 
-  const clearFilters = () => {
-    setFilters({
-      propertyType: "",
-      transactionType: "",
-      neighborhood: "",
-      minPrice: "",
-      maxPrice: "",
-    });
-    setLocation("/imoveis");
-  };
+  // Filtrar imóveis
+  const filteredProperties = convertedProperties.filter((property) => {
+    // Filtro de finalidade
+    if (filters.transactionType && property.transactionType !== filters.transactionType) {
+      return false;
+    }
 
-  const hasActiveFilters = Object.values(filters).some((value) => value !== "");
+    // Filtro de tipo
+    if (filters.propertyType && property.propertyType?.toLowerCase() !== filters.propertyType?.toLowerCase()) {
+      return false;
+    }
 
-  // Extrair bairros únicos dos imóveis
-  const neighborhoods = properties
-    ? Array.from(new Set(properties.map((p) => p.neighborhood).filter(Boolean)))
-    : [];
+    // Filtro de bairro
+    if (filters.neighborhood && property.neighborhood !== filters.neighborhood) {
+      return false;
+    }
+
+    // Filtro de preço
+    if (property.price < filters.minPrice || property.price > filters.maxPrice) {
+      return false;
+    }
+
+    // Filtro de quartos
+    if (filters.bedrooms) {
+      const minBedrooms = parseInt(filters.bedrooms.replace("+", ""));
+      if (property.bedrooms < minBedrooms) {
+        return false;
+      }
+    }
+
+    // TODO: Implementar filtro de características quando o backend suportar
+    
+    return true;
+  });
+
+  // Ordenar imóveis
+  const sortedProperties = [...filteredProperties].sort((a, b) => {
+    if (sortBy === "price_asc") {
+      return a.price - b.price;
+    } else if (sortBy === "price_desc") {
+      return b.price - a.price;
+    } else {
+      // recent
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    }
+  });
+
+  const resultCount = sortedProperties.length;
 
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <>
+      <Helmet>
+        <title>Imóveis em Brasília - Casa DF Imóveis</title>
+        <meta
+          name="description"
+          content="Encontre os melhores imóveis para compra e aluguel em Brasília. Apartamentos, casas, coberturas e mais."
+        />
+      </Helmet>
+
       <Header />
-      
-      <main className="flex-1">
+
+      <div className="min-h-screen bg-muted/30">
         {/* Hero Section */}
-        <section className="bg-black text-white py-16">
+        <section className="bg-gradient-to-br from-primary/10 to-primary/5 py-12">
           <div className="container">
-            <h1 className="text-5xl font-bold mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-              Imóveis Disponíveis
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              Imóveis em Brasília
             </h1>
-            <p className="text-xl text-gray-300">
-              Explore nossa seleção exclusiva de propriedades de alto padrão
+            <p className="text-lg text-muted-foreground">
+              Encontre o imóvel perfeito para você
             </p>
           </div>
         </section>
 
-        {/* Filtros */}
-        <section className="py-8 bg-gray-50 border-b">
-          <div className="container">
-            <div className="flex items-center gap-4 mb-6">
-              <SlidersHorizontal className="w-5 h-5 text-gray-600" />
-              <h2 className="text-lg font-semibold">Filtros</h2>
-              {hasActiveFilters && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={clearFilters}
-                  className="ml-auto"
-                >
-                  <X className="w-4 h-4 mr-2" />
-                  Limpar Filtros
-                </Button>
-              )}
+        {/* Filters */}
+        <section className="container -mt-8 mb-8">
+          <PropertyFilterBar onFilterChange={setFilters} resultCount={resultCount} />
+        </section>
+
+        {/* Results */}
+        <section className="container pb-20">
+          {/* Toolbar */}
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-2">
+              <Button
+                variant={viewMode === "grid" ? "default" : "outline"}
+                size="icon"
+                onClick={() => setViewMode("grid")}
+              >
+                <Grid3x3 className="w-4 h-4" />
+              </Button>
+              <Button
+                variant={viewMode === "list" ? "default" : "outline"}
+                size="icon"
+                onClick={() => setViewMode("list")}
+              >
+                <List className="w-4 h-4" />
+              </Button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-              <Select
-                value={filters.transactionType}
-                onValueChange={(value) => {
-                  setFilters({ ...filters, transactionType: value });
-                  // Atualizar URL
-                  const params = new URLSearchParams(window.location.search);
-                  if (value) params.set("finalidade", value);
-                  else params.delete("finalidade");
-                  setLocation(`/imoveis?${params.toString()}`);
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Finalidade" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="venda">Venda</SelectItem>
-                  <SelectItem value="locacao">Locação</SelectItem>
-                  <SelectItem value="venda_locacao">Venda/Locação</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Select
-                value={filters.propertyType}
-                onValueChange={(value) => {
-                  setFilters({ ...filters, propertyType: value });
-                  // Atualizar URL
-                  const params = new URLSearchParams(window.location.search);
-                  if (value) params.set("tipo", value);
-                  else params.delete("tipo");
-                  setLocation(`/imoveis?${params.toString()}`);
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Tipo de Imóvel" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="casa">Casa</SelectItem>
-                  <SelectItem value="apartamento">Apartamento</SelectItem>
-                  <SelectItem value="cobertura">Cobertura</SelectItem>
-                  <SelectItem value="terreno">Terreno</SelectItem>
-                  <SelectItem value="comercial">Comercial</SelectItem>
-                  <SelectItem value="rural">Rural</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Select
-                value={filters.neighborhood}
-                onValueChange={(value) => {
-                  setFilters({ ...filters, neighborhood: value });
-                  // Atualizar URL
-                  const params = new URLSearchParams(window.location.search);
-                  if (value) params.set("bairro", value);
-                  else params.delete("bairro");
-                  setLocation(`/imoveis?${params.toString()}`);
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Bairro" />
-                </SelectTrigger>
-                <SelectContent>
-                  {neighborhoods.map((neighborhood) => (
-                    <SelectItem key={neighborhood} value={neighborhood || ""}>
-                      {neighborhood}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <Select
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">Ordenar por:</span>
+              <select
+                className="border rounded-md px-3 py-2 text-sm bg-white"
                 value={sortBy}
-                onValueChange={(value: any) => setSortBy(value)}
+                onChange={(e) => setSortBy(e.target.value as any)}
               >
-                <SelectTrigger>
-                  <SelectValue placeholder="Ordenar por" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="newest">Mais Recentes</SelectItem>
-                  <SelectItem value="price_asc">Menor Preço</SelectItem>
-                  <SelectItem value="price_desc">Maior Preço</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <div className="text-center flex items-center justify-center bg-white rounded-md border px-4">
-                <span className="text-sm font-medium">
-                  {filteredAndSortedProperties.length} {filteredAndSortedProperties.length === 1 ? "imóvel" : "imóveis"}
-                </span>
-              </div>
+                <option value="recent">Mais Recentes</option>
+                <option value="price_asc">Menor Preço</option>
+                <option value="price_desc">Maior Preço</option>
+              </select>
             </div>
           </div>
+
+          {/* Property Grid */}
+          {isLoading ? (
+            <div className={`grid gap-6 ${viewMode === "grid" ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" : "grid-cols-1"}`}>
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="space-y-4">
+                  <Skeleton className="aspect-[4/3] w-full" />
+                  <Skeleton className="h-6 w-3/4" />
+                  <Skeleton className="h-4 w-1/2" />
+                </div>
+              ))}
+            </div>
+          ) : sortedProperties.length > 0 ? (
+            <div className={`grid gap-6 ${viewMode === "grid" ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" : "grid-cols-1"}`}>
+              {sortedProperties.map((property) => (
+                <PropertyCard key={property.id} property={property} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-20">
+              <h3 className="text-2xl font-semibold mb-2">Nenhum imóvel encontrado</h3>
+              <p className="text-muted-foreground mb-6">
+                Tente ajustar os filtros para encontrar mais opções
+              </p>
+              <Button onClick={() => setFilters({
+                transactionType: "venda",
+                propertyType: "",
+                neighborhood: "",
+                minPrice: 0,
+                maxPrice: 5000000,
+                bedrooms: "",
+                features: [],
+              })}>
+                Limpar Filtros
+              </Button>
+            </div>
+          )}
         </section>
-
-        {/* Listagem de Imóveis */}
-        <section className="py-12">
-          <div className="container">
-            {isLoading ? (
-              <div className="flex items-center justify-center py-20">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-              </div>
-            ) : filteredAndSortedProperties.length === 0 ? (
-              <div className="text-center py-20">
-                <p className="text-xl text-gray-600 mb-4">
-                  Nenhum imóvel encontrado com os filtros selecionados
-                </p>
-                {hasActiveFilters && (
-                  <Button onClick={clearFilters} variant="outline">
-                    Limpar Filtros
-                  </Button>
-                )}
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {filteredAndSortedProperties.map((property) => (
-                  <Link key={property.id} href={`/imovel/${property.id}`}>
-                    <Card className="overflow-hidden group hover:shadow-2xl transition-all duration-300 cursor-pointer h-full">
-                      <div
-                        className="relative h-64 bg-muted bg-cover bg-center"
-                        style={{
-                          backgroundImage: property.mainImage
-                            ? `url(${property.mainImage})`
-                            : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                        }}
-                      >
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                        
-                        <div className="absolute top-4 left-4 flex gap-2">
-                          <Badge variant="secondary" className="bg-white/90">
-                            {property.transactionType === "venda"
-                              ? "Venda"
-                              : property.transactionType === "locacao"
-                              ? "Locação"
-                              : "Venda/Locação"}
-                          </Badge>
-                          <Badge variant="outline" className="bg-white/90">
-                            {property.propertyType === "casa"
-                              ? "Casa"
-                              : property.propertyType === "apartamento"
-                              ? "Apartamento"
-                              : property.propertyType === "cobertura"
-                              ? "Cobertura"
-                              : property.propertyType}
-                          </Badge>
-                        </div>
-
-                        <div className="absolute bottom-4 left-4 text-white">
-                          <span className="text-2xl font-bold" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                            {property.salePrice && property.salePrice > 0
-                              ? `R$ ${property.salePrice.toLocaleString("pt-BR")}`
-                              : property.rentPrice && property.rentPrice > 0
-                              ? `R$ ${property.rentPrice.toLocaleString("pt-BR")}/mês`
-                              : "Consulte"}
-                          </span>
-                        </div>
-                      </div>
-
-                      <CardContent className="p-6">
-                        <h3 className="text-xl font-bold mb-2 line-clamp-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                          {property.title}
-                        </h3>
-                        <p className="text-gray-600 text-sm mb-4 flex items-center gap-1">
-                          <MapPin className="h-4 w-4 flex-shrink-0" />
-                          <span className="line-clamp-1">
-                            {property.neighborhood}, {property.city}
-                          </span>
-                        </p>
-                        <div className="flex items-center gap-4 text-sm text-gray-600">
-                          {property.bedrooms && property.bedrooms > 0 && (
-                            <span className="flex items-center gap-1">
-                              <Bed className="h-4 w-4" /> {property.bedrooms}
-                            </span>
-                          )}
-                          {property.bathrooms && property.bathrooms > 0 && (
-                            <span className="flex items-center gap-1">
-                              <Bath className="h-4 w-4" /> {property.bathrooms}
-                            </span>
-                          )}
-                          {property.parkingSpaces && property.parkingSpaces > 0 && (
-                            <span className="flex items-center gap-1">
-                              <Car className="h-4 w-4" /> {property.parkingSpaces}
-                            </span>
-                          )}
-                          {property.totalArea && property.totalArea > 0 && (
-                            <span className="flex items-center gap-1">
-                              <Ruler className="h-4 w-4" /> {property.totalArea}m²
-                            </span>
-                          )}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </div>
-        </section>
-      </main>
+      </div>
 
       <Footer />
-    </div>
+    </>
   );
 }

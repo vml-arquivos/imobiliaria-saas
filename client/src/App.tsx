@@ -6,6 +6,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 
 import AdminLayout from "./components/AdminLayout";
+import CompareBar from "./components/CompareBar";
 import Home from "./pages/Home";
 import PropertyDetailPage from "./pages/PropertyDetail";
 import BlogPosts from "./pages/admin/BlogPosts";
@@ -14,6 +15,7 @@ import Properties from "./pages/Properties";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import About from "./pages/About";
+import CompareProperties from "./pages/CompareProperties";
 import Dashboard from "./pages/admin/Dashboard";
 import PropertiesAdmin from "./pages/admin/Properties";
 import PropertyEdit from "./pages/admin/PropertyEdit";
@@ -23,6 +25,9 @@ import LeadEdit from "./pages/admin/LeadEdit";
 import ClientManagement from "./pages/admin/ClientManagement";
 import FollowUp from "./pages/admin/FollowUp";
 import Analytics from "./pages/admin/Analytics";
+import TestImageUpload from "./pages/TestImageUpload";
+import SalesFunnel from "./pages/admin/SalesFunnel";
+import FinancingSimulator from "./pages/FinancingSimulator";
 
 function Router() {
   return (
@@ -34,6 +39,9 @@ function Router() {
       <Route path="/blog" component={Blog} />
       <Route path="/blog/:slug" component={BlogPost} />
       <Route path="/quem-somos" component={About} />
+      <Route path="/comparar-imoveis" component={CompareProperties} />
+      <Route path="/simulador-financiamento" component={FinancingSimulator} />
+      <Route path="/test-upload" component={TestImageUpload} />
       
       {/* Admin routes */}
       <Route path="/admin/analytics">
@@ -66,6 +74,13 @@ function Router() {
       </Route>
       <Route path="/admin/properties/:id">
         {(params) => <PropertyEdit />}
+      </Route>
+      <Route path="/admin/funil">
+        {() => (
+          <AdminLayout>
+            <SalesFunnel />
+          </AdminLayout>
+        )}
       </Route>
       <Route path="/admin/leads">
         {() => (
@@ -130,6 +145,7 @@ function App() {
         <TooltipProvider>
           <Toaster />
           <Router />
+          <CompareBar />
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>

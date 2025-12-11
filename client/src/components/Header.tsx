@@ -21,13 +21,13 @@ export default function Header() {
         <div className="container">
           <div className="flex h-10 items-center justify-between text-sm">
             <div className="hidden md:flex items-center gap-6 text-white/70">
-              <a href="tel:6132544464" className="flex items-center gap-2 hover:text-primary transition-colors">
+              <a href="tel:61981488353" className="flex items-center gap-2 hover:text-primary transition-colors">
                 <Phone className="h-3.5 w-3.5" />
-                <span>(61) 3254-4464</span>
+                <span>(61) 98148-8353</span>
               </a>
-              <a href="mailto:ernanisimiao@hotmail.com" className="flex items-center gap-2 hover:text-primary transition-colors">
+              <a href="mailto:contato@casadf.com.br" className="flex items-center gap-2 hover:text-primary transition-colors">
                 <Mail className="h-3.5 w-3.5" />
-                <span>ernanisimiao@hotmail.com</span>
+                <span>contato@casadf.com.br</span>
               </a>
             </div>
             <div className="flex items-center gap-4">
@@ -75,7 +75,10 @@ export default function Header() {
           {/* Logo */}
           <Link href="/">
             <div className="flex items-center gap-3 cursor-pointer">
-              <img src="/logo-ernani-nunes.jpg" alt="Casa DF - O Casa DF" className="h-16 w-auto" />
+              <div className="text-white">
+                <div className="text-2xl font-bold">CASA DF</div>
+                <div className="text-xs text-white/70">Imóveis em Brasília</div>
+              </div>
             </div>
           </Link>
 
@@ -98,7 +101,7 @@ export default function Header() {
           {/* CTA Button */}
           <div className="hidden md:flex items-center gap-4">
             <Button asChild className="bg-primary hover:bg-primary/90">
-              <a href="https://wa.me/5561981299575" target="_blank" rel="noopener noreferrer">
+              <a href="https://wa.me/5561981488353" target="_blank" rel="noopener noreferrer">
                 Fale Conosco
               </a>
             </Button>
