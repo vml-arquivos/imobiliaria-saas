@@ -60,6 +60,7 @@ RUN npm install -g pnpm@latest
 
 # Copiar package.json e instalar apenas prod dependencies
 COPY package.json pnpm-lock.yaml ./
+COPY patches ./patches
 RUN pnpm install --prod --no-frozen-lockfile
 
 # Copiar builds do frontend e backend
