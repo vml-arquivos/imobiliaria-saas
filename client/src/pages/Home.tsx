@@ -362,12 +362,15 @@ function BlogSection() {
 }
 
 export default function Home() {
-  const [location, setLocation] = useLocation();
+  const [, setLocation] = useLocation();
   const [searchParams, setSearchParams] = useState({
-    transactionType: "",
-    propertyType: "",
-    neighborhood: "",
+    transactionType: '',
+    propertyType: '',
+    neighborhood: '',
   });
+  
+  // Buscar configurações do site
+  const { data: settings } = trpc.settings.get.useQuery();
 
   // Ler query params da URL ao carregar
   useEffect(() => {
@@ -394,19 +397,27 @@ export default function Home() {
       <Header />
       
       {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center bg-black">
+      <section 
+        className={`relative h-screen flex items-center justify-center bg-black ${
+          settings?.themeStyle === 'classic' ? 'py-20' : ''
+        }`}
+      >
         <div 
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: 'url(/hero-mansion.jpg)' }}
+          style={{ 
+            backgroundImage: `url(${settings?.heroBackgroundImage || '/hero-mansion.jpg'})` 
+          }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 to-black/50" />
         
-        <div className="relative z-10 container text-center text-white">
+        <div className={`relative z-10 text-center text-white ${
+          settings?.themeStyle === 'classic' ? 'container' : 'container'
+        }`}>
           <h1 className="text-5xl md:text-7xl font-bold mb-6" style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '61px' }}>
-            Encontre Seu Imóvel em Brasília
+            {settings?.heroTitle || 'Encontre Seu Imóvel em Brasília'}
           </h1>
           <p className="text-xl md:text-2xl mb-12 max-w-3xl mx-auto">
-            A Casa DF Imóveis oferece as melhores opções de imóveis em Brasília e região. Encontre seu lar ideal com nosso atendimento especializado.
+            {settings?.heroSubtitle || 'A Casa DF Imóveis oferece as melhores opções de imóveis em Brasília e região. Encontre seu lar ideal com nosso atendimento especializado.'}
           </p>
 
           {/* Search Bar */}
@@ -518,17 +529,18 @@ export default function Home() {
       <ReviewsSection />
 
       {/* Sobre o Corretor */}
-      <section className="py-20 bg-muted/30">
-        <div className="container">
+      <section className={`py-20 bg-muted/30 ${
+        settings?.themeStyle === 'classic' ? '' : ''
+      }`}>
+        <div className={settings?.themeStyle === 'classic' ? 'container max-w-6xl mx-auto' : 'container'}>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-4xl font-serif font-bold mb-6">Casa DF Imóveis</h2>
-              <p className="text-lg text-muted-foreground mb-6">
-                Sua imobiliária de confiança em Brasília. Especializada em imóveis residenciais e comerciais com atendimento personalizado e profissional.
-              </p>
-              <p className="text-muted-foreground mb-6">
-                A Casa DF Imóveis oferece soluções completas para compra, venda e locação de imóveis em Brasília e região. Nossa equipe está pronta para te ajudar a encontrar o imóvel ideal, com transparência, agilidade e segurança em todas as etapas.
-              </p>
+              <h2 className="text-4xl font-serif font-bold mb-6">
+                {settings?.aboutSectionTitle || 'Casa DF Imóveis'}
+              </h2>
+              <div className="text-lg text-muted-foreground mb-6 whitespace-pre-line">
+                {settings?.aboutSectionContent || 'Sua imobiliária de confiança em Brasília. Especializada em imóveis residenciais e comerciais com atendimento personalizado e profissional.\n\nA Casa DF Imóveis oferece soluções completas para compra, venda e locação de imóveis em Brasília e região. Nossa equipe está pronta para te ajudar a encontrar o imóvel ideal, com transparência, agilidade e segurança em todas as etapas.'}
+              </div>
               <div className="grid grid-cols-2 gap-4 mb-6">
                 <div className="flex items-center gap-2">
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
@@ -557,16 +569,26 @@ export default function Home() {
                 <Button size="lg">Conheça Mais</Button>
               </Link>
             </div>
-            <div className="relative h-96 lg:h-full min-h-[400px] rounded-lg overflow-hidden bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-              <div className="text-center p-8">
-                <div className="w-32 h-32 mx-auto mb-6 rounded-full bg-white/90 flex items-center justify-center">
-                  <svg className="w-20 h-20 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                  </svg>
+            <div className="relative h-96 lg:h-full min-h-[400px] rounded-lg overflow-hidden">
+              {settings?.aboutSectionImage ? (
+                <img 
+                  src={settings.aboutSectionImage} 
+                  alt="Sobre Casa DF"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center h-full">
+                  <div className="text-center p-8">
+                    <div className="w-32 h-32 mx-auto mb-6 rounded-full bg-white/90 flex items-center justify-center">
+                      <svg className="w-20 h-20 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                      </svg>
+                    </div>
+                    <h3 className="text-3xl font-bold text-primary mb-2">CASA DF</h3>
+                    <p className="text-lg text-muted-foreground">Imóveis em Brasília</p>
+                  </div>
                 </div>
-                <h3 className="text-3xl font-bold text-primary mb-2">CASA DF</h3>
-                <p className="text-lg text-muted-foreground">Imóveis em Brasília</p>
-              </div>
+              )}
             </div>
           </div>
         </div>

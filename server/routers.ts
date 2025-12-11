@@ -673,6 +673,15 @@ const settingsRouter = router({
       siteKeywords: z.string().optional(),
       googleAnalyticsId: z.string().optional(),
       facebookPixelId: z.string().optional(),
+      // Customização Visual
+      themeStyle: z.enum(["modern", "classic"]).optional(),
+      primaryColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(), // Hex color
+      heroTitle: z.string().optional(),
+      heroSubtitle: z.string().optional(),
+      heroBackgroundImage: z.string().optional(),
+      aboutSectionTitle: z.string().optional(),
+      aboutSectionContent: z.string().optional(),
+      aboutSectionImage: z.string().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
       if (ctx.user.role !== 'admin') {

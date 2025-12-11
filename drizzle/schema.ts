@@ -340,6 +340,20 @@ export const siteSettings = mysqlTable("site_settings", {
   googleAnalyticsId: varchar("googleAnalyticsId", { length: 50 }),
   facebookPixelId: varchar("facebookPixelId", { length: 50 }),
   
+  // Customização Visual (Site Builder)
+  themeStyle: mysqlEnum("themeStyle", ["modern", "classic"]).default("modern"),
+  primaryColor: varchar("primaryColor", { length: 7 }).default("#0f172a"), // Hex color
+  
+  // Seção Hero
+  heroTitle: varchar("heroTitle", { length: 255 }),
+  heroSubtitle: text("heroSubtitle"),
+  heroBackgroundImage: varchar("heroBackgroundImage", { length: 500 }),
+  
+  // Seção Sobre
+  aboutSectionTitle: varchar("aboutSectionTitle", { length: 255 }),
+  aboutSectionContent: text("aboutSectionContent"),
+  aboutSectionImage: varchar("aboutSectionImage", { length: 500 }),
+  
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
 

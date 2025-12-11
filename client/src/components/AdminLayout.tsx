@@ -13,6 +13,7 @@ import {
   Bot,
   Bell,
   BarChart3,
+  Paintbrush,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -33,6 +34,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { name: "Gestão de Clientes", href: "/admin/clients", icon: Bot },
     { name: "Follow-up Automático", href: "/admin/followup", icon: Bell, badge: true },
     { name: "Blog", href: "/admin/blog", icon: FileText },
+    { name: "Personalizar Site", href: "/admin/customization", icon: Paintbrush },
     { name: "Configurações", href: "/admin/settings", icon: Settings },
   ];
 
@@ -67,7 +69,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             <Link href="/">
               <div className="flex flex-col cursor-pointer">
                 <span className="text-xl font-serif font-bold text-foreground">
-                  ERNANI NUNES
+                  CASA DF
                 </span>
                 <span className="text-xs text-primary tracking-wider">
                   ADMIN PANEL
