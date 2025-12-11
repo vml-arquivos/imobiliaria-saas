@@ -7,6 +7,7 @@ WORKDIR /app
 
 # Copiar package.json e lock files
 COPY package.json pnpm-lock.yaml ./
+COPY patches ./patches
 
 # Instalar pnpm e dependências
 RUN npm install -g pnpm@latest && \
@@ -16,6 +17,7 @@ RUN npm install -g pnpm@latest && \
 COPY client ./client
 COPY shared ./shared
 COPY tsconfig.json ./
+COPY vite.config.ts ./
 
 # Build do frontend
 RUN pnpm run build:client
@@ -29,6 +31,7 @@ WORKDIR /app
 
 # Copiar package.json e lock files
 COPY package.json pnpm-lock.yaml ./
+COPY patches ./patches
 
 # Instalar pnpm e dependências
 RUN npm install -g pnpm@latest && \
@@ -40,6 +43,7 @@ COPY drizzle ./drizzle
 COPY shared ./shared
 COPY storage ./storage
 COPY tsconfig.json ./
+COPY vite.config.ts ./
 
 # Build do backend
 RUN pnpm run build:server
@@ -59,7 +63,7 @@ COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --prod --frozen-lockfile
 
 # Copiar builds do frontend e backend
-COPY --from=client-builder /app/dist/client ./dist/client
+COPY --from=client-builder /app/dist/public ./dist/public
 COPY --from=server-builder /app/dist/server ./dist/server
 
 # Copiar arquivos necessários
