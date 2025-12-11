@@ -14,6 +14,127 @@ import { analyticsEvents, campaignSources, transactions, commissions, reviews } 
 
 const authRouter = router({
   me: publicProcedure.query(opts => opts.ctx.user),
+  
+  login: publicProcedure
+    .input(z.object({
+      email: z.string().email("Email inválido"),
+      password: z.string().min(1, "Senha obrigatória"),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const { hashPassword, verifyPassword, validateEmail } = await import("./auth");
+      const { sdk } = await import("./_core/sdk");
+      
+      // Validar email
+      if (!validateEmail(input.email)) {
+        throw new Error("Email inválido");
+      }
+      
+      // Buscar usuário por email
+      const user = await db.getUserByEmail(input.email);
+      if (!user) {
+        throw new Error("Email ou senha incorretos");
+      }
+      
+      // Verificar senha
+      if (!user.password) {
+        throw new Error("Usuário não possui senha configurada. Use login OAuth.");
+      }
+      
+      const isValid = await verifyPassword(input.password, user.password);
+      if (!isValid) {
+        throw new Error("Email ou senha incorretos");
+      }
+      
+      // Criar sessão JWT (usando openId como user.id)
+      const sessionToken = await sdk.createSessionToken(
+        user.openId || String(user.id),
+        { name: user.name || "" }
+      );
+      
+      // Setar cookie
+      const cookieOptions = getSessionCookieOptions(ctx.req);
+      ctx.res.cookie(COOKIE_NAME, sessionToken, {
+        ...cookieOptions,
+        maxAge: 365 * 24 * 60 * 60 * 1000, // 1 ano
+      });
+      
+      // Atualizar lastSignedIn
+      await db.updateUserLastSignIn(user.id);
+      
+      return {
+        success: true,
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
+      };
+    }),
+  
+  register: publicProcedure
+    .input(z.object({
+      name: z.string().min(2, "Nome deve ter no mínimo 2 caracteres"),
+      email: z.string().email("Email inválido"),
+      password: z.string().min(8, "Senha deve ter no mínimo 8 caracteres"),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const { hashPassword, validatePassword, validateEmail } = await import("./auth");
+      const { sdk } = await import("./_core/sdk");
+      
+      // Validar email
+      if (!validateEmail(input.email)) {
+        throw new Error("Email inválido");
+      }
+      
+      // Validar senha
+      const passwordValidation = validatePassword(input.password);
+      if (!passwordValidation.valid) {
+        throw new Error(passwordValidation.error || "Senha inválida");
+      }
+      
+      // Verificar se email já existe
+      const existingUser = await db.getUserByEmail(input.email);
+      if (existingUser) {
+        throw new Error("Email já cadastrado");
+      }
+      
+      // Hash da senha
+      const hashedPassword = await hashPassword(input.password);
+      
+      // Criar usuário
+      const user = await db.createUser({
+        name: input.name,
+        email: input.email,
+        password: hashedPassword,
+        loginMethod: "local",
+        role: "user", // Primeiro usuário pode ser admin manualmente no DB
+      });
+      
+      // Criar sessão JWT
+      const sessionToken = await sdk.createSessionToken(
+        user.openId || String(user.id),
+        { name: user.name || "" }
+      );
+      
+      // Setar cookie
+      const cookieOptions = getSessionCookieOptions(ctx.req);
+      ctx.res.cookie(COOKIE_NAME, sessionToken, {
+        ...cookieOptions,
+        maxAge: 365 * 24 * 60 * 60 * 1000, // 1 ano
+      });
+      
+      return {
+        success: true,
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
+      };
+    }),
+  
   logout: publicProcedure.mutation(({ ctx }) => {
     const cookieOptions = getSessionCookieOptions(ctx.req);
     ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });

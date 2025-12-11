@@ -775,3 +775,64 @@ export async function searchOwners(query: string): Promise<Owner[]> {
     )
     .orderBy(desc(owners.createdAt));
 }
+export async function getUserByEmail(email: string): Promise<User | undefined> {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get user: database not available");
+    return undefined;
+  }
+
+  const result = await db
+    .select()
+    .from(users)
+    .where(eq(users.email, email))
+    .limit(1);
+
+  return result.length > 0 ? result[0] : undefined;
+}
+
+/**
+ * Criar novo usuário (para registro local)
+ */
+export async function createUser(user: InsertUser): Promise<User> {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  // Gerar openId único se não fornecido (para compatibilidade)
+  if (!user.openId) {
+    user.openId = `local_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+  }
+
+  const result = await db.insert(users).values(user);
+  const insertId = Number(result[0].insertId);
+  
+  const created = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, insertId))
+    .limit(1);
+
+  if (created.length === 0) {
+    throw new Error("Failed to create user");
+  }
+
+  return created[0];
+}
+
+/**
+ * Atualizar lastSignedIn do usuário
+ */
+export async function updateUserLastSignIn(userId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot update user: database not available");
+    return;
+  }
+
+  await db
+    .update(users)
+    .set({ lastSignedIn: new Date() })
+    .where(eq(users.id, userId));
+}

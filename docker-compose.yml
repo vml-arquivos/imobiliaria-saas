@@ -23,15 +23,6 @@ services:
       # Autenticação JWT
       JWT_SECRET: ${JWT_SECRET}
       
-      # OAuth Manus
-      VITE_APP_ID: ${VITE_APP_ID}
-      OAUTH_SERVER_URL: ${OAUTH_SERVER_URL}
-      VITE_OAUTH_PORTAL_URL: ${VITE_OAUTH_PORTAL_URL}
-      
-      # Owner Info
-      OWNER_OPEN_ID: ${OWNER_OPEN_ID}
-      OWNER_NAME: ${OWNER_NAME}
-      
       # N8n Webhooks
       N8N_LEAD_WEBHOOK_URL: ${N8N_LEAD_WEBHOOK_URL}
       VITE_N8N_CHAT_WEBHOOK_URL: ${VITE_N8N_CHAT_WEBHOOK_URL}
