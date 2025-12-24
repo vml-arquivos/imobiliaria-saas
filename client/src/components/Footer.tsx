@@ -1,7 +1,9 @@
 import { Link } from "wouter";
+import { trpc } from "@/utils/trpc";
 import { Phone, Mail, MapPin } from "lucide-react";
 
 export default function Footer() {
+  const { data: settings } = trpc.settings.get.useQuery();
   const currentYear = new Date().getFullYear();
 
   return (
@@ -12,13 +14,13 @@ export default function Footer() {
           {/* Sobre */}
           <div>
             <h3 className="text-xl font-serif font-semibold mb-4 text-primary">
-              Casa DF Imóveis
+              {settings?.companyName || 'Casa DF Imóveis'}
             </h3>
             <p className="text-background/70 text-sm leading-relaxed mb-4">
-              Sua imobiliária de confiança em Brasília. Especializada em imóveis residenciais e comerciais com atendimento personalizado e profissional.
+              {settings?.companyDescription || 'Sua imobiliária de confiança em Brasília. Especializada em imóveis residenciais e comerciais com atendimento personalizado e profissional.'}
             </p>
             <p className="text-background/70 text-sm">
-              <strong className="text-background">Localização:</strong> Guará - DF
+	              <strong className="text-background">Localização:</strong> {settings?.address || 'Guará - DF'}
             </p>
           </div>
 
@@ -74,16 +76,16 @@ export default function Footer() {
             <ul className="space-y-3">
               <li>
                 <a
-                  href="tel:61981488353"
+	                  href={`tel:${settings?.phone}`}
                   className="flex items-start gap-3 text-background/70 hover:text-primary transition-colors text-sm"
                 >
                   <Phone className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                  <span>(61) 98148-8353</span>
+	                  <span>{settings?.phone || '(61) 98148-8353'}</span>
                 </a>
               </li>
               <li>
                 <a
-                  href="https://wa.me/5561981488353"
+	                  href={`https://wa.me/${settings?.whatsapp}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-start gap-3 text-background/70 hover:text-primary transition-colors text-sm"
@@ -94,17 +96,17 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="mailto:contato@casadf.com.br"
+	                  href={`mailto:${settings?.email}`}
                   className="flex items-start gap-3 text-background/70 hover:text-primary transition-colors text-sm"
                 >
                   <Mail className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                  <span>contato@casadf.com.br</span>
+	                  <span>{settings?.email || 'contato@casadf.com.br'}</span>
                 </a>
               </li>
               <li>
                 <div className="flex items-start gap-3 text-background/70 text-sm">
                   <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                  <span>Guará - Brasília/DF</span>
+	                  <span>{settings?.address || 'Guará - Brasília/DF'}</span>
                 </div>
               </li>
             </ul>
@@ -120,7 +122,7 @@ export default function Footer() {
             </p>
             <div className="flex gap-4">
               <a
-                href="https://instagram.com"
+	                href={settings?.instagram || "https://instagram.com"}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-background/10 hover:bg-primary flex items-center justify-center transition-colors"
@@ -131,7 +133,7 @@ export default function Footer() {
                 </svg>
               </a>
               <a
-                href="https://youtube.com"
+	                href={settings?.youtube || "https://youtube.com"}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-background/10 hover:bg-primary flex items-center justify-center transition-colors"
@@ -142,7 +144,7 @@ export default function Footer() {
                 </svg>
               </a>
               <a
-                href="https://tiktok.com"
+	                href={settings?.tiktok || "https://tiktok.com"}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-background/10 hover:bg-primary flex items-center justify-center transition-colors"
@@ -160,7 +162,7 @@ export default function Footer() {
         <div className="border-t border-background/10 py-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-background/60">
             <p>
-              © {currentYear} Casa DF Imóveis. Todos os direitos reservados.
+	              © {currentYear} {settings?.companyName || 'Casa DF Imóveis'}. Todos os direitos reservados.
             </p>
             <div className="flex gap-6">
               <Link href="/privacidade">

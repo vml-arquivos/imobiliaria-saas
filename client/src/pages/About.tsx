@@ -1,4 +1,5 @@
 import { Helmet } from "react-helmet-async";
+import { trpc } from "@/utils/trpc";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
@@ -20,6 +21,7 @@ import {
 } from "lucide-react";
 
 export default function About() {
+  const { data: settings } = trpc.settings.get.useQuery();
   const achievements = [
     { icon: Building2, value: "300+", label: "Imóveis Disponíveis" },
     { icon: Users, value: "500+", label: "Clientes Satisfeitos" },
@@ -105,10 +107,10 @@ export default function About() {
               Sobre Nós
             </Badge>
             <h1 className="text-5xl md:text-6xl font-bold mb-6">
-              Casa DF Imóveis
-            </h1>
+	              {settings?.companyName || 'Casa DF Imóveis'}
+	            </h1>
             <p className="text-xl text-muted-foreground mb-8">
-              Sua imobiliária de confiança em Brasília. Especializada em soluções completas para compra, venda e locação de imóveis residenciais e comerciais.
+              {settings?.companyDescription || 'Sua imobiliária de confiança em Brasília. Especializada em soluções completas para compra, venda e locação de imóveis residenciais e comerciais.'}
             </p>
           </div>
         </div>
@@ -141,7 +143,15 @@ export default function About() {
             <h2 className="text-4xl font-bold mb-8 text-center">Nossa História</h2>
             <div className="space-y-6 text-lg text-muted-foreground">
               <p>
-                A <strong className="text-foreground">Casa DF Imóveis</strong> nasceu com o propósito de transformar a experiência de compra, venda e locação de imóveis em Brasília. Fundada por profissionais experientes do mercado imobiliário, nossa missão é oferecer um atendimento diferenciado, transparente e focado nas necessidades de cada cliente.
+                A <strong className="text-foreground">{settings?.companyName || 'Casa DF Imóveis'}</strong> nasceu com o propósito de transformar a experiência de compra, venda e locação de imóveis em Brasília. Fundada por profissionais experientes do mercado imobiliário, nossa missão é oferecer um atendimento diferenciado, transparente e focado nas necessidades de cada cliente.
+                
+                <p>
+                  **Corretor Responsável:** {settings?.realtorName || 'Corretor Principal'} - CRECI: {settings?.realtorCreci || '00000'}
+                </p>
+                
+                <p>
+                  {settings?.realtorBio || 'Profissional com vasta experiência no mercado imobiliário de Brasília, focado em oferecer as melhores oportunidades de investimento e moradia. Nosso compromisso é com a sua satisfação e a realização do seu sonho.'}
+                </p>
               </p>
               <p>
                 Ao longo dos anos, construímos uma sólida reputação baseada em confiança, profissionalismo e resultados concretos. Atendemos clientes em todas as regiões de Brasília e Entorno, desde quem busca sua primeira casa até investidores que desejam expandir seu portfólio imobiliário.
@@ -229,19 +239,19 @@ export default function About() {
               <Button size="lg" variant="secondary" asChild>
                 <a href="https://wa.me/5561981488353" target="_blank" rel="noopener noreferrer">
                   <Phone className="w-5 h-5 mr-2" />
-                  Fale Conosco
-                </a>
+	                  {settings?.phone || 'Fale Conosco'}
+	                </a>
               </Button>
               <Button size="lg" variant="outline" asChild className="bg-transparent border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary">
                 <a href="mailto:contato@casadf.com.br">
                   <Mail className="w-5 h-5 mr-2" />
-                  Enviar Email
-                </a>
+	                  {settings?.email || 'Enviar Email'}
+	                </a>
               </Button>
             </div>
             <div className="mt-8 flex items-center justify-center gap-2 text-sm opacity-80">
               <MapPin className="w-4 h-4" />
-              <span>Guará - Brasília/DF</span>
+	              <span>{settings?.address || 'Guará - Brasília/DF'}</span>
             </div>
           </div>
         </div>

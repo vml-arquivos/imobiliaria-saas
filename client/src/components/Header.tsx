@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Link } from "wouter";
+import { trpc } from "@/utils/trpc";
 import { Menu, X, Phone, Mail } from "lucide-react";
 import { Button } from "./ui/button";
 
 export default function Header() {
+  const { data: settings } = trpc.settings.get.useQuery();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navigation = [
@@ -21,18 +23,18 @@ export default function Header() {
         <div className="container">
           <div className="flex h-10 items-center justify-between text-sm">
             <div className="hidden md:flex items-center gap-6 text-white/70">
-              <a href="tel:61981488353" className="flex items-center gap-2 hover:text-primary transition-colors">
-                <Phone className="h-3.5 w-3.5" />
-                <span>(61) 98148-8353</span>
-              </a>
-              <a href="mailto:contato@casadf.com.br" className="flex items-center gap-2 hover:text-primary transition-colors">
-                <Mail className="h-3.5 w-3.5" />
-                <span>contato@casadf.com.br</span>
-              </a>
+              <a href={`tel:${settings?.phone}`} className="flex items-center gap-2 hover:text-primary transition-colors">
+	                <Phone className="h-3.5 w-3.5" />
+	                <span>{settings?.phone || '(61) 98148-8353'}</span>
+	              </a>
+              <a href={`mailto:${settings?.email}`} className="flex items-center gap-2 hover:text-primary transition-colors">
+	                <Mail className="h-3.5 w-3.5" />
+	                <span>{settings?.email || 'contato@casadf.com.br'}</span>
+	              </a>
             </div>
             <div className="flex items-center gap-4">
               <a
-                href="https://instagram.com"
+                href={settings?.instagram || "https://instagram.com"}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-white/70 hover:text-primary transition-colors"
@@ -43,7 +45,7 @@ export default function Header() {
                 </svg>
               </a>
               <a
-                href="https://youtube.com"
+                href={settings?.youtube || "https://youtube.com"}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-white/70 hover:text-primary transition-colors"
@@ -54,7 +56,7 @@ export default function Header() {
                 </svg>
               </a>
               <a
-                href="https://tiktok.com"
+                href={settings?.tiktok || "https://tiktok.com"}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-white/70 hover:text-primary transition-colors"
@@ -76,8 +78,8 @@ export default function Header() {
           <Link href="/">
             <div className="flex items-center gap-3 cursor-pointer">
               <div className="text-white">
-                <div className="text-2xl font-bold">CASA DF</div>
-                <div className="text-xs text-white/70">Imóveis em Brasília</div>
+	                <div className="text-2xl font-bold">{settings?.companyName || 'CASA DF'}</div>
+	                <div className="text-xs text-white/70">{settings?.siteTitle || 'Imóveis em Brasília'}</div>
               </div>
             </div>
           </Link>
@@ -100,11 +102,11 @@ export default function Header() {
 
           {/* CTA Button */}
           <div className="hidden md:flex items-center gap-4">
-            <Button asChild className="bg-primary hover:bg-primary/90">
-              <a href="https://wa.me/5561981488353" target="_blank" rel="noopener noreferrer">
-                Fale Conosco
-              </a>
-            </Button>
+	            <Button asChild className="bg-primary hover:bg-primary/90">
+	              <a href={`https://wa.me/${settings?.whatsapp}`} target="_blank" rel="noopener noreferrer">
+	                Fale Conosco
+	              </a>
+	            </Button>
           </div>
 
           {/* Mobile menu button */}
@@ -140,11 +142,11 @@ export default function Header() {
                 Dashboard CRM
               </span>
             </Link>
-            <Button asChild className="mt-4 bg-primary hover:bg-primary/90">
-              <a href="https://wa.me/5561981299575" target="_blank" rel="noopener noreferrer">
-                Fale Conosco
-              </a>
-            </Button>
+	            <Button asChild className="mt-4 bg-primary hover:bg-primary/90">
+	              <a href={`https://wa.me/${settings?.whatsapp}`} target="_blank" rel="noopener noreferrer">
+	                Fale Conosco
+	              </a>
+	            </Button>
           </nav>
         </div>
       )}
